@@ -1,21 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { translateToUrdu } from '@/lib/translate';
 
 export default function Home() {
   const [blogUrl, setBlogUrl] = useState("");
   const [summary, setSummary] = useState("");
+  const [urduSummary, setUrduSummary] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSummarize() {
     if (!blogUrl) return alert("Please enter a blog URL.");
     setLoading(true);
     setSummary("");
+    setUrduSummary("");
 
     setTimeout(() => {
-      setSummary(
-        `This is a simulated summary of the blog at ${blogUrl}. It highlights the key points clearly and concisely.`
-      );
+      const englishSummary = `This is a simulated summary of the blog at ${blogUrl}. It highlights the key points clearly and concisely.`;
+      setSummary(englishSummary);
+
+      const urduVersion = translateToUrdu(englishSummary);
+      setUrduSummary(urduVersion);
+
       setLoading(false);
     }, 2000);
   }
@@ -24,7 +30,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#fdfaf5] font-sans flex flex-col justify-between">
       {/* Main Content Container */}
       <main className="flex-grow max-w-6xl mx-auto w-full px-6 sm:px-12 py-12 flex flex-col gap-10">
-        {/* Header row: Main heading left, dashboard links right */}
+        {/* Header row */}
         <div
           className="header-row"
           style={{
@@ -42,53 +48,26 @@ export default function Home() {
             className="dashboard-nav"
             style={{
               display: "flex",
-              flexDirection: "row",       // <-- Changed here to horizontal row
-              alignItems: "center",       // vertically center links
-              gap: "2rem",                // space between links
+              flexDirection: "row",
+              alignItems: "center",
+              gap: "2rem",
               fontWeight: 600,
               fontSize: "1.125rem",
               color: "#2c2a29",
               userSelect: "none",
-              whiteSpace: "nowrap",       // prevent wrapping
+              whiteSpace: "nowrap",
             }}
           >
-            <a
-              href="#about"
-              className="hover:text-[#4f46e5]"
-              style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}
-            >
-              About
-            </a>
-            <a
-              href="#account"
-              className="hover:text-[#4f46e5]"
-              style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}
-            >
-              Account
-            </a>
-            <a
-              href="#settings"
-              className="hover:text-[#4f46e5]"
-              style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}
-            >
-              Settings
-            </a>
-            <a
-              href="#help"
-              className="hover:text-[#4f46e5]"
-              style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}
-            >
-              Help
-            </a>
+            <a href="#about" className="hover:text-[#4f46e5]" style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}>About</a>
+            <a href="#account" className="hover:text-[#4f46e5]" style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}>Account</a>
+            <a href="#settings" className="hover:text-[#4f46e5]" style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}>Settings</a>
+            <a href="#help" className="hover:text-[#4f46e5]" style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}>Help</a>
           </nav>
         </div>
 
-        {/* Input and Button spanning full width */}
+        {/* Input and Button */}
         <div className="max-w-xl w-full flex flex-col gap-4">
-          <label
-            htmlFor="blogUrl"
-            className="block text-2xl font-semibold text-[#2c2a29]"
-          >
+          <label htmlFor="blogUrl" className="block text-2xl font-semibold text-[#2c2a29]">
             Enter Blog URL to Summarize
           </label>
           <input
@@ -109,11 +88,19 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Summary Output */}
+        {/* English Summary Output */}
         {summary && (
           <article className="max-w-xl bg-[#fef3c7] rounded-2xl border border-gray-200 p-8 text-[#2c2a29] leading-relaxed whitespace-pre-wrap font-medium select-text">
             <h2 className="text-3xl font-bold mb-6">Summary</h2>
             <p>{summary}</p>
+          </article>
+        )}
+
+        {/* Urdu Summary Output */}
+        {urduSummary && (
+          <article className="max-w-xl bg-[#e8f5e9] rounded-2xl border border-gray-200 p-8 text-[#2c2a29] leading-relaxed whitespace-pre-wrap font-medium select-text">
+            <h2 className="text-3xl font-bold mb-6">خلاصہ (Urdu Summary)</h2>
+            <p>{urduSummary}</p>
           </article>
         )}
       </main>
@@ -123,60 +110,13 @@ export default function Home() {
         <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-4">
           <p>© 2025 Nexium. All rights reserved.</p>
           <div className="flex gap-5 justify-center text-2xl">
-            <a
-              href="https://facebook.com/nexium"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#9b5de5]"
-            >
-              📘
-            </a>
-            <a
-              href="https://twitter.com/nexium"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#9b5de5]"
-            >
-              🐦
-            </a>
-            <a
-              href="https://instagram.com/nexium"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#9b5de5]"
-            >
-              📸
-            </a>
-            <a
-              href="mailto:contact@nexium.com"
-              className="hover:text-[#9b5de5]"
-            >
-              ✉️
-            </a>
-            <a
-              href="https://nextjs.org/learn"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#9b5de5]"
-            >
-              📚
-            </a>
-            <a
-              href="https://vercel.com/templates?framework=next.js"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#9b5de5]"
-            >
-              🚀
-            </a>
-            <a
-              href="https://nextjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#9b5de5]"
-            >
-              🌐
-            </a>
+            <a href="https://facebook.com/nexium" target="_blank" rel="noopener noreferrer" className="hover:text-[#9b5de5]">📘</a>
+            <a href="https://twitter.com/nexium" target="_blank" rel="noopener noreferrer" className="hover:text-[#9b5de5]">🐦</a>
+            <a href="https://instagram.com/nexium" target="_blank" rel="noopener noreferrer" className="hover:text-[#9b5de5]">📸</a>
+            <a href="mailto:contact@nexium.com" className="hover:text-[#9b5de5]">✉️</a>
+            <a href="https://nextjs.org/learn" target="_blank" rel="noopener noreferrer" className="hover:text-[#9b5de5]">📚</a>
+            <a href="https://vercel.com/templates?framework=next.js" target="_blank" rel="noopener noreferrer" className="hover:text-[#9b5de5]">🚀</a>
+            <a href="https://nextjs.org" target="_blank" rel="noopener noreferrer" className="hover:text-[#9b5de5]">🌐</a>
           </div>
         </div>
       </footer>
