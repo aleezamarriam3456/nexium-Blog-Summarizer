@@ -1,43 +1,48 @@
 import { NextResponse } from 'next/server';
-import * as cheerio from 'cheerio';
-import { translateToUrdu } from '../../../lib/translate'; // your custom translation function
-
-// Simple summarizer: first 3 sentences
-function summarize(text: string): string {
-  const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
-  return sentences.slice(0, 3).join(' ');
-}
 
 export async function POST(request: Request) {
   try {
-    const { blogUrl } = await request.json();
+    const { fullText } = await request.json();
 
-    if (!blogUrl || typeof blogUrl !== 'string') {
-      return NextResponse.json({ error: 'Invalid or missing blogUrl' }, { status: 400 });
+    if (!fullText || typeof fullText !== 'string') {
+      return NextResponse.json({ error: 'Missing or invalid fullText' }, { status: 400 });
     }
 
-    const res = await fetch(blogUrl);
-    if (!res.ok) {
-      return NextResponse.json({ error: `Failed to fetch URL: ${res.status}` }, { status: 400 });
-    }
+    // Split into sentences using regex to catch ., !, ? as delimiters
+    const sentences = fullText
+      .split(/(?<=[.?!])\s+/)
+      .map(s => s.trim())
+      .filter(Boolean);
 
-    const html = await res.text();
-    const $ = cheerio.load(html);
+    // Take first 3 sentences or fewer if not available
+    const summary = sentences.slice(0, 3).join(' ');
+    // Ensure summary ends with a punctuation
+    const summaryFinal = /[.?!]$/.test(summary) ? summary : summary + '.';
 
-    let text = '';
-    $('p').each((_, el) => {
-      text += $(el).text() + ' ';
-    });
+    // Simple dictionary for Urdu translation
+    const dictionary: { [key: string]: string } = {
+      'the': 'د', 'is': 'ہے', 'blog': 'بلاگ', 'about': 'بارے میں',
+      'this': 'یہ', 'a': 'ایک', 'of': 'کے', 'and': 'اور'
+    };
 
-    if (!text.trim()) {
-      return NextResponse.json({ error: 'No readable text found.' }, { status: 400 });
-    }
+    // Translate word by word, keep punctuation intact
+    const translateToUrdu = (text: string) => {
+      return text
+        .split(/\b/) // split by word boundaries
+        .map(word => {
+          const lower = word.toLowerCase();
+          // Only translate alphabetic words
+          if (dictionary[lower]) return dictionary[lower];
+          return word;
+        })
+        .join('');
+    };
 
-    const englishSummary = summarize(text.trim());
-    const urduSummary = translateToUrdu(englishSummary);
+    const urduSummary = translateToUrdu(summaryFinal);
 
-    return NextResponse.json({ englishSummary, urduSummary });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 });
+    return NextResponse.json({ summary: summaryFinal, urduSummary });
+  } catch (error) {
+    console.error('Summarize API error:', error);
+    return NextResponse.json({ error: 'Something went wrong while summarizing' }, { status: 500 });
   }
 }

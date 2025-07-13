@@ -1,3 +1,5 @@
+// data/dictionary.ts
+
 export const dictionary: Record<string, string> = {
   blog: 'بلاگ',
   summary: 'خلاصہ',

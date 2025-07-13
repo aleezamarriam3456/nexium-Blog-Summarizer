@@ -1,25 +1,21 @@
-import { dictionary } from '@/data/dictionary';
+// lib/translate.ts
 
-/**
- * Translates an English sentence into Urdu using a simple word-to-word dictionary.
- * - Preserves punctuation (e.g., "blog," becomes "بلاگ،")
- * - Case-insensitive matching
- * - Falls back to original word if no translation found
- */
+import { dictionary } from '../data/dictionary';
+
 export function translateToUrdu(text: string): string {
   return text
-    .split(/\s+/) // Split into words based on spaces
+    .split(/\s+/)
     .map((word) => {
-      // Match words with optional punctuation (e.g., blog., guide!)
-      const match = word.match(/^([a-zA-Z]+)([.,!?]*)$/);
+      // Remove punctuation for matching and keep it after translation
+      const punctuationMatch = word.match(/[.,!?;:]$/);
+      const punctuation = punctuationMatch ? punctuationMatch[0] : '';
+      const cleanWord = punctuation ? word.slice(0, -1).toLowerCase() : word.toLowerCase();
 
-      if (!match) return word; // Return original if it's a number, emoji, etc.
+      // Translate word if found, else keep original
+      const translatedWord = dictionary[cleanWord] || word;
 
-      const [_, core, punct] = match;
-      const lowerCore = core.toLowerCase();
-
-      // Translate using dictionary and reattach punctuation
-      return (dictionary[lowerCore] || core) + (punct || '');
+      // Add back punctuation if any
+      return translatedWord + punctuation;
     })
     .join(' ');
 }
