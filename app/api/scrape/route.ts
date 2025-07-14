@@ -11,32 +11,37 @@ export async function GET(request: Request) {
 
   try {
     const response = await fetch(blogUrl);
+    if (!response.ok) {
+      return NextResponse.json({ error: 'Failed to fetch the blog URL' }, { status: 502 });
+    }
+
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    // Extract main text (simple logic)
-    const paragraphs = $('p').map((i, el) => $(el).text()).get();
-    const fullText = paragraphs.join('\n');
+    // Extract main text: get all paragraph texts
+    const paragraphs = $('p').map((_, el) => $(el).text()).get();
+    const fullText = paragraphs.join('\n\n');
 
-    // Simulate static AI summary (first 3 lines)
+    // Simulate AI summary: take first 3 paragraphs and join as summary
     const summary = paragraphs.slice(0, 3).join(' ');
 
-    // Translate to Urdu (basic dictionary)
-    const dictionary: { [key: string]: string } = {
+    // Simple Urdu dictionary for translation
+    const dictionary: Record<string, string> = {
       'the': 'د', 'is': 'ہے', 'blog': 'بلاگ', 'about': 'بارے میں',
       'this': 'یہ', 'a': 'ایک'
     };
 
+    // Basic word-by-word translation function
     const translateToUrdu = (text: string) => {
-      return text.split(' ').map(word => dictionary[word.toLowerCase()] || word).join(' ');
+      return text
+        .split(' ')
+        .map(word => dictionary[word.toLowerCase()] || word)
+        .join(' ');
     };
 
     const urduSummary = translateToUrdu(summary);
 
-    // Optional: save to Supabase & MongoDB here or do it elsewhere
-    // await saveToSupabase(blogUrl, summary, urduSummary);
-    // await saveToMongoDB(blogUrl, fullText);
-
+    // Return scraped text and translations
     return NextResponse.json({ fullText, summary, urduSummary });
   } catch (error) {
     console.error('Scrape error:', error);

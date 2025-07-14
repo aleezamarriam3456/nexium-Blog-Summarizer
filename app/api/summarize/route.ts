@@ -8,32 +8,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing or invalid fullText' }, { status: 400 });
     }
 
-    // Split into sentences using regex to catch ., !, ? as delimiters
+    // Split text into sentences using regex for ., !, ? as delimiters
     const sentences = fullText
       .split(/(?<=[.?!])\s+/)
       .map(s => s.trim())
       .filter(Boolean);
 
-    // Take first 3 sentences or fewer if not available
+    // Take first 3 sentences or fewer
     const summary = sentences.slice(0, 3).join(' ');
-    // Ensure summary ends with a punctuation
+    // Ensure summary ends with punctuation
     const summaryFinal = /[.?!]$/.test(summary) ? summary : summary + '.';
 
-    // Simple dictionary for Urdu translation
-    const dictionary: { [key: string]: string } = {
+    // Simple Urdu dictionary for translation
+    const dictionary: Record<string, string> = {
       'the': 'د', 'is': 'ہے', 'blog': 'بلاگ', 'about': 'بارے میں',
       'this': 'یہ', 'a': 'ایک', 'of': 'کے', 'and': 'اور'
     };
 
-    // Translate word by word, keep punctuation intact
+    // Translate word by word, preserving punctuation
     const translateToUrdu = (text: string) => {
       return text
         .split(/\b/) // split by word boundaries
         .map(word => {
           const lower = word.toLowerCase();
-          // Only translate alphabetic words
-          if (dictionary[lower]) return dictionary[lower];
-          return word;
+          return dictionary[lower] || word;
         })
         .join('');
     };

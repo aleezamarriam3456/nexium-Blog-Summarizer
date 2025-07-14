@@ -1,27 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
 
-// ✅ Use server-safe env vars (don't use NEXT_PUBLIC here)
-const supabaseUrl = process.env.SUPABASE_URL ?? '';
-const supabaseAnonKey = process.env.SUPABASE_KEY ?? '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
 
-// ✅ Throw error if missing env vars
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Supabase URL and Key must be provided in environment variables');
+if (!supabaseUrl || !supabaseServiceRoleKey) {
+  throw new Error('Supabase URL and Service Role Key must be provided in environment variables');
 }
 
-// ✅ Initialize Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
-// ✅ Type for Supabase summary record
 export interface SummaryRecord {
   id?: string;
   blog_url: string;
   summary: string;
-  urduSummary?: string;
+  urduSummary?: string | null;
   created_at?: string;
 }
 
-// ✅ Save a summary to Supabase
 export async function saveSummary(
   blogUrl: string,
   summary: string,
@@ -50,7 +45,6 @@ export async function saveSummary(
   })) as SummaryRecord[];
 }
 
-// ✅ Fetch all summaries
 export async function fetchSummaries(): Promise<SummaryRecord[]> {
   const { data, error } = await supabase
     .from('summaries')
