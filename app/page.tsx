@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -29,7 +30,7 @@ export default function Home() {
       const scrapeData = await scrapeRes.json();
       if (!scrapeRes.ok) throw new Error(scrapeData.error || 'Failed to scrape blog');
 
-      const fullText = scrapeData.fullText || scrapeData.text || scrapeData; // adapt if needed
+      const fullText = scrapeData.fullText || scrapeData.text || scrapeData;
 
       if (!fullText) throw new Error('No text scraped from the blog URL');
 
@@ -80,6 +81,7 @@ export default function Home() {
             <a href="#account" className="hover:text-[#4f46e5]">Account</a>
             <a href="#settings" className="hover:text-[#4f46e5]">Settings</a>
             <a href="#help" className="hover:text-[#4f46e5]">Help</a>
+            <Link href="/history" className="hover:text-[#4f46e5]">History</Link>
           </nav>
         </div>
 
