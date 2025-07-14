@@ -77,10 +77,10 @@ export default function Home() {
           </h1>
 
           <nav className="dashboard-nav flex flex-row items-center gap-8 font-semibold text-[#2c2a29] select-none whitespace-nowrap">
-            <a href="#about" className="hover:text-[#4f46e5]">About</a>
-            <a href="#account" className="hover:text-[#4f46e5]">Account</a>
-            <a href="#settings" className="hover:text-[#4f46e5]">Settings</a>
-            <a href="#help" className="hover:text-[#4f46e5]">Help</a>
+            <Link href="/about" className="hover:text-[#4f46e5]">About</Link>
+            <Link href="/account" className="hover:text-[#4f46e5]">Account</Link>
+            <Link href="/settings" className="hover:text-[#4f46e5]">Settings</Link>
+            <Link href="/help" className="hover:text-[#4f46e5]">Help</Link>
             <Link href="/history" className="hover:text-[#4f46e5]">History</Link>
           </nav>
         </div>
